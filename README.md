@@ -29,38 +29,46 @@ All projects will require the following:
 #### Custom Force: NAME OF YOUR FORCE
 
 ### Custom Force Formula
-What is the formula for your force? Including descriptions/definitions for the symbols. (You may include a picture of the formula if it is not easily typed.)
-
-YOUR ANSWER HERE
+Fk​ = μk​*Fn
+Fk = kinetic friction
+μk = coefficient of kinetic friction
+Fn = normal force acting on the object​
 
 ### Custom Force Breakdown
 - What information that is already present in the `Orb` or `OrbNode` classes does this force use?
-  - YOUR ANSWER HERE
+  - Gravity, spring, drag if applicable [Fn is reliant on these forces b/c of F = ma and Fnet = 0 (if 0 acceleration which we will have)
 
 - Does this force require any new constants, if so what are they and what values will you try initially?
-  - YOUR ANSWER HERE
+  - μk, is dependent on the type of material the ground is.
+  - <img width="582" height="560" alt="image" src="https://github.com/user-attachments/assets/3aa17d19-18bc-4324-9915-f17faab8b821" />
+  In the image above, we will only use 'WOOD ON WOOD' [μk = 0.2], 'GLASS ON GLASS' [0.4], 'ICE ON ICE' [0.03]
 
 - Does this force require any new information to be added to the `Orb` class? If so, what is it and what data type will you use?
-  - YOUR ANSWER HERE
+  - Requires each Orb to be made of a specific material. We will use a BOOLEAN value to determine its material and apply the appropriate coefficient.
 
 - Does this force interact with other `Orbs`, or is it applied based on the environment?
-  - YOUR ANSWER HERE
+  - This force is applied based on the environment (the ground).
 
 - In order to calculate this force, do you need to perform extra intermediary calculations? If so, what?
-  - YOUR ANSWER HERE
-
+  - Need to calculate the normal force (Fn) that is acting on the object. So for example, if we run a simulation with 'GRAVITY' toggled true and the orb is moving left and right on the floor, in order to calculate Fn, we need Fnet which requires Fg.
+- Need to track if the Orb and the ground are in contact in order for sliding forces to be applied (collison)
+- set an equakity check w raidus
 --- 
 
 ### Simulation 1: Gravity
 Describe how you will attempt to simulate orbital motion.
-
+- Fcentripetal = mv^2 / r
+  - r = distance between centers of two orbs
+  - m = mass of the orb
+  - v = speed of the orb
 --- 
 
 ### Simulation 2: Spring
 Describe what your spring simulation will look like. Explain how it will be setup, and how it should behave while running.
-
-YOUR ANSWER HERE
-
+-Need a constant describing the spring constant(k) of the spring
+-Need a constant describing the length of the spring
+-need a function that will draw the spring attached to the orbs
+-need the distance between the two centers of the orbs
 --- 
 
 ### Simulation 3: Drag
