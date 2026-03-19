@@ -92,4 +92,6 @@ Describe what your Custom force simulation will look like. Explain how it will b
 
 ### Simulation 5: Combination
 Describe what your combination simulation will look like. Explain how it will be setup, and how it should behave while running.
-- 
+- the combination simulation will have multiple different forces acting at once on the orbs i.e. gravity and friction
+- we use simulations 1 and 4 as a base
+ 
