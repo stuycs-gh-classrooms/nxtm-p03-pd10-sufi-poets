@@ -50,9 +50,9 @@ Fn = normal force acting on the object​
   - This force is applied based on the environment (the ground).
 
 - In order to calculate this force, do you need to perform extra intermediary calculations? If so, what?
-  - Need to calculate the normal force (Fn) that is acting on the object. So for example, if we run a simulation with 'GRAVITY' toggled true and the orb is moving left and right on the floor, in order to calculate Fn, we need Fnet which requires Fg.
-- Need to track if the Orb and the ground are in contact in order for sliding forces to be applied (collison)
-- set an equakity check w raidus
+ - Need to calculate the normal force (Fn) that is acting on the object. So for example, if we run a simulation with 'GRAVITY' toggled true and the orb is moving left and right on the floor, in order to calculate Fn, we need Fnet which requires Fg.
+ - Need to track if the Orb and the ground are in contact in order for sliding forces to be applied (collison)
+ - set an equality check w radius and the ground
 --- 
 
 ### Simulation 1: Gravity
@@ -65,28 +65,31 @@ Describe how you will attempt to simulate orbital motion.
 
 ### Simulation 2: Spring
 Describe what your spring simulation will look like. Explain how it will be setup, and how it should behave while running.
--Need a constant describing the spring constant(k) of the spring
--Need a constant describing the length of the spring
--need a function that will draw the spring attached to the orbs
--need the distance between the two centers of the orbs
+- need a constant describing the spring constant(k) of the spring
+- need a constant describing the length of the spring
+- need a function that will draw the spring attached to the orbs
+- need the distance between the two centers of the orbs
+- the two balls will be connected via a spring which will compress and extend, and Fspring will act on the two balls
 --- 
 
 ### Simulation 3: Drag
 Describe what your drag simulation will look like. Explain how it will be setup, and how it should behave while running.
-
-YOUR ANSWER HERE
-
+- need a function that will calculate the force of drag
+- need a function that will apply the force of drag on the balls
+- need a constant for coefficient of drag
+- the balls will have the force of drag acting on it, which will change its velocity
 --- 
 
 ### Simulation 4: Custom force
 Describe what your Custom force simulation will look like. Explain how it will be setup, and how it should behave while running.
-
-YOUR ANSWER HERE
+- need constants for different coefficient of kinetic friction for different materials
+- need booleans that will check the material of the environment and the ball and apply the correct coefficient
+- need a function that will calculate the normal force acting on the balls
+- need a boolean that will check if the orb and the ground come into contact, and then frictional forces are applied
+- the balls will have kinetic friction acting on them when they come into contact with the floor, and it will have different magnitudes based on the material of the balls and the ground
 
 --- 
 
 ### Simulation 5: Combination
 Describe what your combination simulation will look like. Explain how it will be setup, and how it should behave while running.
-
-YOUR ANSWER HERE
-
+- 
