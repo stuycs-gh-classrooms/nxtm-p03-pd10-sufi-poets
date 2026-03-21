@@ -26,7 +26,7 @@ All projects will require the following:
 ## Phase 0: Force Selection, Analysis & Plan
 ---------- 
 
-#### Custom Force: NAME OF YOUR FORCE
+#### Custom Force: Friction
 
 ### Custom Force Formula
 Fk​ = μk​*Fn
