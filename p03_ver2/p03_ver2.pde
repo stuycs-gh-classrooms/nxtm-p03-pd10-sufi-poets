@@ -51,19 +51,15 @@ void draw()
   for (int o=0; o < orbCount; o++) {
     orbs[o].display();
 
-    //Part 1: write drawSpring below
-    //Use drawspring correctly to draw
     if (o < orbCount - 1) {
       drawSpring(orbs[o], orbs[o + 1]);
     }
   }//draw orbs & springs
 
   if (toggles[MOVING]) {
-    //Part 2: write applySprings below
     applySprings();
 
-    //part 3: apply other forces if toggled on
-    //Part 3: Apply earth based gravity and drag if those
+    //Apply earth based gravity and drag if those
     //options are turned on.
     for (int i=0; i < orbCount; i++) {
       Orb o = orbs[i];
@@ -75,7 +71,11 @@ void draw()
         PVector dragf = o.getDragForce(D_COEF);
         o.applyForce(dragf);
       }
-    }//gravity, drag
+      if (toggles[FRICTION]) {
+        frictionMode();
+        applyFriction();
+      }
+    }//gravity, drag, friction
 
     for (int o=0; o < orbCount; o++) {
       orbs[o].move(toggles[BOUNCE]);
@@ -125,9 +125,14 @@ void makeOrbs(boolean ordered)
       x += SPRING_LENGTH;
     }
   }
-    
 }//makeOrbs
 
+void frictionMode() {
+  if (toggles[FRICTION]) {
+    float x = 500;
+      orbs[1] = new Orb(x, height - 100, int(random(MIN_SIZE, MAX_SIZE)), int(random(MIN_MASS, MAX_MASS)));
+  }
+}
 
 /**
  drawSpring(Orb o0, Orb o1)
@@ -183,29 +188,29 @@ void applySprings()
 }//applySprings
 
 void applyFriction() {
-  PVector friction = new PVector(0,0);
+  PVector friction = new PVector(0, 0);
   for (int i = 0; i < orbCount - 1; i++) { //subtracvted 1 bc of fixed obj
     Orb o0 = orbs[i]; //calling object
-   if (togglesF[GG]) {
+    if (togglesF[GG]) {
       friction = o0.getFriction(F_COEF_GG).add(o0.getDragForce(D_COEF));
-   }
-   if (togglesF[II]) {
-     friction = o0.getFriction(F_COEF_II).add(o0.getDragForce(D_COEF));
-   }
-   if (togglesF[WW]) {
+    }
+    if (togglesF[II]) {
+      friction = o0.getFriction(F_COEF_II).add(o0.getDragForce(D_COEF));
+    }
+    if (togglesF[WW]) {
       friction = o0.getFriction(F_COEF_WW).add(o0.getDragForce(D_COEF));
-   }
-   
-   o0.applyForce(friction);
+    }
+
+    o0.applyForce(friction);
   }
 }
 
-  //draw ground using shape done
-  //spawn in the orbs on the ground (altering the x and y position) done
-  //apply the force of friction on that orb (do this by a for loop?) done
-  //use an if statement for when friction and dragforce are applied at the same time 
-  //in which you add the two forces together.
-  //work on combo force!!!!!!! :) good luck sufia ily <3
+//draw ground using shape done
+//spawn in the orbs on the ground (altering the x and y position) done
+//apply the force of friction on that orb (do this by a for loop?) done
+//use an if statement for when friction and dragforce are applied at the same time
+//in which you add the two forces together.
+//work on combo force!!!!!!! :) good luck sufia ily <3
 
 
 /**
@@ -255,6 +260,15 @@ void keyPressed()
   if (key == 'c') {
     toggles[COMBINATION] = !toggles[COMBINATION];
   }
+  if (key == 'r') {
+    togglesF[GG] = !togglesF[GG];
+  }
+  if (key == 'w') {
+    togglesF[WW] = !togglesF[WW];
+  }
+  if (key == 'i') {
+    togglesF[II] = !togglesF[II];
+  }
   if (key == '1') {
     makeOrbs(true);
   }
@@ -303,17 +317,30 @@ void displayMode()
     x+= w+5;
   }
   if (toggles[FRICTION]) {
+    fill(0);
+    textSize(15);
+    textAlign(RIGHT);
+    text("Press 'r', 'w', or 'i' for different types of friction.", 300, 500);
     if (togglesF[GG]) {
+      fill(0);
+      textAlign(LEFT);
+      text("Glass on glass friction", 460, 500);
       fill(190, 196, 198);
-      rect(0,height-100,width, 100);
+      rect(0, height-100, width, 100);
     }
-    if(togglesF[WW]) {
+    if (togglesF[WW]) {
+      fill(0);
+      textAlign(LEFT);
+      text("Water on water friction", 460, 500);
       fill(144, 129, 115);
-      rect(0,height-100, width, 100);
+      rect(0, height-100, width, 100);
     }
-    if(togglesF[II]) {
+    if (togglesF[II]) {
+      fill(0);
+      textAlign(LEFT);
+      text("Ice on ice friction", 460, 500);
       fill(133, 201, 227);
-      rect(0,height-100, width, 100);
+      rect(0, height-100, width, 100);
     }
   }
 }//display
