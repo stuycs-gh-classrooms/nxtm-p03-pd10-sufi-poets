@@ -28,8 +28,9 @@ String[] modes = {"Moving", "Bounce", "Gravity", "Drag", "Friction", "Combinatio
 
 FixedOrb earth;
 Orb[] orbs;
+Orb[] forbs;
 int orbCount;
-
+int orbfCount;
 
 void setup()
 {
@@ -37,6 +38,7 @@ void setup()
 
   //Part 0: Write makeOrbs below
   makeOrbs(true);
+  frictionMode();
   //Part 3: create earth to simulate gravity
   earth = new FixedOrb(width/2, height/2, 50, 1000);
 }//setup
@@ -48,6 +50,11 @@ void draw()
   displayMode();
 
   //draw the orbs and springs
+  if (toggles[FRICTION]) {
+    for (int i=0; i < orbfCount; i++) {
+      forbs[i].display();
+    }
+  }
   for (int o=0; o < orbCount; o++) {
     orbs[o].display();
 
@@ -72,8 +79,12 @@ void draw()
         o.applyForce(dragf);
       }
     }//gravity, drag
-    if (toggles[FRICTION]) {
-      applyFriction();
+    for (int i=0; i < orbfCount; i++) {
+      if (toggles[FRICTION]) {
+        //frictionMode();
+        forbs[i].display();
+        applyFriction();
+      }
     }
 
     for (int o=0; o < orbCount; o++) {
@@ -101,13 +112,14 @@ void draw()
 void makeOrbs(boolean ordered)
 {
   orbCount = NUM_ORBS;
-  if (toggles[FRICTION]) {
-    orbCount = 3; //only want 3 orbs for simplicity
-    float y = 500;
-    orbs[orbCount - 1] = new Orb(width - 100, y, int(random(MIN_SIZE, MAX_SIZE)), int(random(MIN_MASS, MAX_MASS)));
-  } else {
-    orbCount = NUM_ORBS;
-  }
+  /*if (toggles[FRICTION]) {
+   orbCount = 3; //only want 3 orbs for simplicity
+   float y = 500;
+   orbs[orbCount - 1] = new Orb(width - 100, y, int(random(MIN_SIZE, MAX_SIZE)), int(random(MIN_MASS, MAX_MASS)));
+   } else {
+   orbCount = NUM_ORBS;
+   }
+   */
 
   orbs = new Orb[orbCount];
   orbs[0] = new FixedOrb(); //first orb = FixedOrb
@@ -129,12 +141,16 @@ void makeOrbs(boolean ordered)
   }
 }//makeOrbs
 
-//void frictionMode() {
-//  if (toggles[FRICTION]) {
-//    float y = 500;
-//    orbs[1] = new Orb(width - 100, y, int(random(MIN_SIZE, MAX_SIZE)), int(random(MIN_MASS, MAX_MASS)));
-//  }
-//}
+void frictionMode() {
+  orbfCount = 2;
+  forbs = new Orb[orbfCount];
+  if (toggles[FRICTION]) {
+    for (int num = 0; num < orbfCount; num++) {
+      float y = 500;
+      forbs[num] = new Orb(width - 100, y, int(random(MIN_SIZE, MAX_SIZE)), int(random(MIN_MASS, MAX_MASS)));
+    }
+  }
+}
 
 /**
  drawSpring(Orb o0, Orb o1)
@@ -191,8 +207,8 @@ void applySprings()
 
 void applyFriction() {
   PVector friction = new PVector(0, 0);
-  for (int i = 1; i < orbCount - 1; i++) { //subtracvted 1 bc of fixed obj
-    Orb o0 = orbs[i]; //calling object
+  for (int num = 0; num < orbfCount; num++) { //subtracvted 1 bc of fixed obj
+    Orb o0 = forbs[num]; //calling object
     if (o0.center.y >= height - o0.bsize/2 - 1) { //orbs on the ground
       if (togglesF[GG]) {
         friction = o0.getFriction(F_COEF_GG).add(o0.getDragForce(D_COEF));
@@ -203,8 +219,8 @@ void applyFriction() {
       if (togglesF[WW]) {
         friction = o0.getFriction(F_COEF_WW).add(o0.getDragForce(D_COEF));
       }
-      o0.applyForce(friction);
     }
+    o0.applyForce(friction);
   }
 }
 
@@ -259,18 +275,22 @@ void keyPressed()
   }
   if (key == 'f') {
     toggles[FRICTION] = !toggles[FRICTION];
+    frictionMode();
   }
   if (key == 'c') {
     toggles[COMBINATION] = !toggles[COMBINATION];
   }
   if (key == 'r') {
     togglesF[GG] = !togglesF[GG];
+    frictionMode();
   }
   if (key == 'w') {
     togglesF[WW] = !togglesF[WW];
+    frictionMode();
   }
   if (key == 'i') {
     togglesF[II] = !togglesF[II];
+    frictionMode();
   }
   if (key == '1') {
     makeOrbs(true);
