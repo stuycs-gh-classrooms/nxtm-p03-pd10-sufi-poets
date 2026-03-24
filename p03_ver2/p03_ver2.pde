@@ -71,11 +71,10 @@ void draw()
         PVector dragf = o.getDragForce(D_COEF);
         o.applyForce(dragf);
       }
-      if (toggles[FRICTION]) {
-        frictionMode();
-        applyFriction();
-      }
-    }//gravity, drag, friction
+    }//gravity, drag
+    if (toggles[FRICTION]) {
+      applyFriction();
+    }
 
     for (int o=0; o < orbCount; o++) {
       orbs[o].move(toggles[BOUNCE]);
@@ -102,8 +101,17 @@ void draw()
 void makeOrbs(boolean ordered)
 {
   orbCount = NUM_ORBS;
+  if (toggles[FRICTION]) {
+    orbCount = 3; //only want 3 orbs for simplicity
+    float y = 500;
+    orbs[orbCount - 1] = new Orb(width - 100, y, int(random(MIN_SIZE, MAX_SIZE)), int(random(MIN_MASS, MAX_MASS)));
+  } else {
+    orbCount = NUM_ORBS;
+  }
+
   orbs = new Orb[orbCount];
   orbs[0] = new FixedOrb(); //first orb = FixedOrb
+
 
   float x = 0;
   float y = 0;
@@ -119,20 +127,14 @@ void makeOrbs(boolean ordered)
       orbs[i] = new Orb(int(random(width)), int(random(height)), int(random(MIN_SIZE, MAX_SIZE)), int(random(MIN_MASS, MAX_MASS)) );
     }
   }
-  if (toggles[FRICTION]) {
-    for (int i = 1; i < orbCount; i++) {
-      orbs[i] = new Orb(x + SPRING_LENGTH, height - 100, int(random(MIN_SIZE, MAX_SIZE)), int(random(MIN_MASS, MAX_MASS)));
-      x += SPRING_LENGTH;
-    }
-  }
 }//makeOrbs
 
-void frictionMode() {
-  if (toggles[FRICTION]) {
-    float x = 500;
-      orbs[1] = new Orb(x, height - 100, int(random(MIN_SIZE, MAX_SIZE)), int(random(MIN_MASS, MAX_MASS)));
-  }
-}
+//void frictionMode() {
+//  if (toggles[FRICTION]) {
+//    float y = 500;
+//    orbs[1] = new Orb(width - 100, y, int(random(MIN_SIZE, MAX_SIZE)), int(random(MIN_MASS, MAX_MASS)));
+//  }
+//}
 
 /**
  drawSpring(Orb o0, Orb o1)
@@ -174,7 +176,7 @@ void applySprings()
    other if the spring is extended past springLength and should
    push the calling object away from o if the spring is compressed
    to be less than springLength.*/
-  for (int i = 0; i < orbCount - 1; i++) {
+  for (int i = 1; i < orbCount - 1; i++) {
     Orb o0 = orbs[i]; //calling object
     Orb o1 = orbs[i + 1]; //other object
 
@@ -189,19 +191,20 @@ void applySprings()
 
 void applyFriction() {
   PVector friction = new PVector(0, 0);
-  for (int i = 0; i < orbCount - 1; i++) { //subtracvted 1 bc of fixed obj
+  for (int i = 1; i < orbCount - 1; i++) { //subtracvted 1 bc of fixed obj
     Orb o0 = orbs[i]; //calling object
-    if (togglesF[GG]) {
-      friction = o0.getFriction(F_COEF_GG).add(o0.getDragForce(D_COEF));
+    if (o0.center.y >= height - o0.bsize/2 - 1) { //orbs on the ground
+      if (togglesF[GG]) {
+        friction = o0.getFriction(F_COEF_GG).add(o0.getDragForce(D_COEF));
+      }
+      if (togglesF[II]) {
+        friction = o0.getFriction(F_COEF_II).add(o0.getDragForce(D_COEF));
+      }
+      if (togglesF[WW]) {
+        friction = o0.getFriction(F_COEF_WW).add(o0.getDragForce(D_COEF));
+      }
+      o0.applyForce(friction);
     }
-    if (togglesF[II]) {
-      friction = o0.getFriction(F_COEF_II).add(o0.getDragForce(D_COEF));
-    }
-    if (togglesF[WW]) {
-      friction = o0.getFriction(F_COEF_WW).add(o0.getDragForce(D_COEF));
-    }
-
-    o0.applyForce(friction);
   }
 }
 
@@ -331,7 +334,7 @@ void displayMode()
     if (togglesF[WW]) {
       fill(0);
       textAlign(LEFT);
-      text("Water on water friction", 460, 500);
+      text("Wood on wood friction", 460, 500);
       fill(144, 129, 115);
       rect(0, height-100, width, 100);
     }

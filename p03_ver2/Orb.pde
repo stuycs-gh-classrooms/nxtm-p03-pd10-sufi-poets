@@ -39,15 +39,13 @@ class Orb
   float mass;
   color c;
   float g = 9.8; //gravity for friction
-  
+
   boolean frictionStatus;
   int GLASS_ON_GLASS = 0;
   int ICE_ON_ICE = 1;
   int WOOD_ON_WOOD = 2;
   boolean[] toggles = new boolean[3];
   Orb[] orbs;
-  //String[] modes = {"Glass on Glass", "Ice on Ice", "Wood on Wood"};
-
   /**
    Creates an orb with random x and y coordinates and creates new PVectors as the
    velocity and acceleration.
@@ -94,6 +92,11 @@ class Orb
     velocity.add(acceleration);
     center.add(velocity);
     acceleration.mult(0);
+
+      if (center.y >= height - bsize/2) {
+        center.y = height - bsize/2; //stay on ground
+        velocity.y = 0; //stop vertical movement
+      }
   }//move
 
 
@@ -142,27 +145,13 @@ class Orb
     friction.mult(-1); //acting against velocity, so (-) of wtvr dxn velocity is
 
     if (velocity.mag() == 0) {
-      return new PVector (0, 0); //friction is equal to 0 except we were getting errors when we tried that 
+      return new PVector (0, 0); //friction is equal to 0 except we were getting errors when we tried that
     }
-    //Fk = uk * fn
-    //fn = mg
-    float normalForce = mass * g;
-    if (toggles[WOOD_ON_WOOD]) {
-      uk = 0.2; //coefficient of friction
-      float mag = uk * normalForce;
-      //Fk = uk * Fn
-      friction.mult(mag);
-    }
-    if (toggles[GLASS_ON_GLASS]) {
-      uk = 0.4;
-      float mag = uk * normalForce;
-      friction.mult(mag);
-    }
-    if (toggles[ICE_ON_ICE]) {
-      uk = 0.03;
-      float mag = uk * normalForce;
-      friction.mult(mag);
-    }
+
+    float normalForce = mass * g; //Fn = Fg = mg
+    float mag = uk * normalForce; //Fk = uk * Fn
+    friction.mult(mag);
+
     return friction;
   }
 
@@ -275,7 +264,7 @@ class Orb
     Creates a 'grid' of colors at a specific increment [third argument].
      */
     c = lerpColor(c0, c1, (mass-MIN_SIZE)/(MAX_MASS-MIN_SIZE));
-    
+
     if (toggles[WOOD_ON_WOOD]) {
       c = color(144, 129, 115);
     }
