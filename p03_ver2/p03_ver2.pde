@@ -44,8 +44,7 @@ void setup()
 }//setup
 
 
-void draw()
-{
+  void draw() {
   background(255);
   displayMode();
 
@@ -55,6 +54,7 @@ void draw()
       forbs[i].display();
     }
   }
+  
   for (int o=0; o < orbCount; o++) {
     orbs[o].display();
 
@@ -78,20 +78,33 @@ void draw()
         PVector dragf = o.getDragForce(D_COEF);
         o.applyForce(dragf);
       }
-    }//gravity, drag
-    for (int i=0; i < orbfCount; i++) {
-      if (toggles[FRICTION]) {
-        //frictionMode();
-        forbs[i].display();
-        applyFriction();
-      }
     }
 
-    for (int o=0; o < orbCount; o++) {
-      orbs[o].move(toggles[BOUNCE]);
-    }
-  }//moving
-}//draw
+      for (int num=0; num< orbfCount; num ++) {
+        Orb f = forbs[num];
+        if (toggles[DRAGF]) {
+          PVector dragf = f.getDragForce(D_COEF);
+          f.applyForce(dragf);
+        }
+      }//drag
+    
+      for (int num=0; num < orbfCount; num++) {
+        if (toggles[FRICTION]) {
+          //frictionMode();
+          //forbs[num].display();
+          applyFriction();
+        }
+      }
+
+      for (int o=0; o < orbCount; o++) {
+        orbs[o].move(toggles[BOUNCE]);
+      }
+      for (int num = 0; num < orbfCount; num++) {
+        forbs[num].move(toggles[BOUNCE]);
+      }
+      
+    }//moving
+  }//draw
 
 
 /**
@@ -142,7 +155,7 @@ void makeOrbs(boolean ordered)
 }//makeOrbs
 
 void frictionMode() {
-  orbfCount = 2;
+  orbfCount = 1;
   forbs = new Orb[orbfCount];
   if (toggles[FRICTION]) {
     for (int num = 0; num < orbfCount; num++) {
@@ -209,7 +222,7 @@ void applyFriction() {
   PVector friction = new PVector(0, 0);
   for (int num = 0; num < orbfCount; num++) { //subtracvted 1 bc of fixed obj
     Orb o0 = forbs[num]; //calling object
-    if (o0.center.y >= height - o0.bsize/2 - 1) { //orbs on the ground
+    if (o0.center.y >= height - 100 /* - o0.bsize/2 - 1*/) { //orbs on the ground
       if (togglesF[GG]) {
         friction = o0.getFriction(F_COEF_GG).add(o0.getDragForce(D_COEF));
       }
@@ -282,15 +295,15 @@ void keyPressed()
   }
   if (key == 'r') {
     togglesF[GG] = !togglesF[GG];
-    frictionMode();
+    //frictionMode();
   }
   if (key == 'w') {
     togglesF[WW] = !togglesF[WW];
-    frictionMode();
+    //frictionMode();
   }
   if (key == 'i') {
     togglesF[II] = !togglesF[II];
-    frictionMode();
+    //frictionMode();
   }
   if (key == '1') {
     makeOrbs(true);
