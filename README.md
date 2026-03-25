@@ -1,9 +1,9 @@
+[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/-jWdCFXs)
 ## Project 00
 ### NeXTCS
 ### Period: 
-## Thinker0: YOUR NAME HERE
-## Thinker1: OTHER NAME HERE
-## Thinker2: OTHER NAME HERE (delete this line if you are a duo)
+## Thinker0: Sufia Nanenco
+## Thinker1: Maisha Alam
 ---
 
 This project will be completed in phases. The first phase will be to work on this document. Use github-flavoured markdown. (For more markdown help [click here](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet) or [here](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) )
@@ -26,59 +26,72 @@ All projects will require the following:
 ## Phase 0: Force Selection, Analysis & Plan
 ---------- 
 
-#### Custom Force: NAME OF YOUR FORCE
+#### Custom Force: Friction
 
 ### Custom Force Formula
-What is the formula for your force? Including descriptions/definitions for the symbols. (You may include a picture of the formula if it is not easily typed.)
-
-YOUR ANSWER HERE
+Fk​ = μk​*Fn
+Fk = kinetic friction
+μk = coefficient of kinetic friction
+Fn = normal force acting on the object​
 
 ### Custom Force Breakdown
 - What information that is already present in the `Orb` or `OrbNode` classes does this force use?
-  - YOUR ANSWER HERE
+  - Gravity, spring, drag if applicable [Fn is reliant on these forces b/c of F = ma and Fnet = 0 (if 0 acceleration which we will have)
 
 - Does this force require any new constants, if so what are they and what values will you try initially?
-  - YOUR ANSWER HERE
+  - μk, is dependent on the type of material the ground is.
+  - <img width="582" height="560" alt="image" src="https://github.com/user-attachments/assets/3aa17d19-18bc-4324-9915-f17faab8b821" />
+  In the image above, we will only use 'WOOD ON WOOD' [μk = 0.2], 'GLASS ON GLASS' [0.4], 'ICE ON ICE' [0.03]
 
 - Does this force require any new information to be added to the `Orb` class? If so, what is it and what data type will you use?
-  - YOUR ANSWER HERE
+  - Requires each Orb to be made of a specific material. We will use a BOOLEAN value to determine its material and apply the appropriate coefficient.
 
 - Does this force interact with other `Orbs`, or is it applied based on the environment?
-  - YOUR ANSWER HERE
+  - This force is applied based on the environment (the ground).
 
 - In order to calculate this force, do you need to perform extra intermediary calculations? If so, what?
-  - YOUR ANSWER HERE
-
+  - Need to calculate the normal force (Fn) that is acting on the object. So for example, if we run a simulation with 'GRAVITY' toggled true and the orb is moving left and right on the floor, in order to calculate Fn, we need Fnet which requires Fg.
+  - Need to track if the Orb and the ground are in contact in order for sliding forces to be applied (collison)
+  - set an equality check w radius and the ground
 --- 
 
 ### Simulation 1: Gravity
 Describe how you will attempt to simulate orbital motion.
-
+- Fcentripetal = mv^2 / r
+  - r = distance between centers of two orbs
+  - m = mass of the orb
+  - v = speed of the orb
 --- 
 
 ### Simulation 2: Spring
 Describe what your spring simulation will look like. Explain how it will be setup, and how it should behave while running.
-
-YOUR ANSWER HERE
-
+  - need a constant describing the spring constant(k) of the spring
+  - need a constant describing the length of the spring
+  - need a function that will draw the spring attached to the orbs
+  - need the distance between the two centers of the orbs
+  - the two balls will be connected via a spring which will compress and extend, and Fspring will act on the two balls
 --- 
 
 ### Simulation 3: Drag
 Describe what your drag simulation will look like. Explain how it will be setup, and how it should behave while running.
-
-YOUR ANSWER HERE
-
+  - need a function that will calculate the force of drag
+  - need a function that will apply the force of drag on the balls
+  - need a constant for coefficient of drag
+  - the balls will have the force of drag acting on it, which will change its velocity
 --- 
 
 ### Simulation 4: Custom force
 Describe what your Custom force simulation will look like. Explain how it will be setup, and how it should behave while running.
-
-YOUR ANSWER HERE
+  - need constants for different coefficient of kinetic friction for different materials
+  - need booleans that will check the material of the environment and the ball and apply the correct coefficient
+  - need a function that will calculate the normal force acting on the balls
+  - need a boolean that will check if the orb and the ground come into contact, and then frictional forces are applied
+  - the balls will have kinetic friction acting on them when they come into contact with the floor, and it will have different magnitudes based on the material     of the balls and the ground
 
 --- 
 
 ### Simulation 5: Combination
 Describe what your combination simulation will look like. Explain how it will be setup, and how it should behave while running.
-
-YOUR ANSWER HERE
-
+  - the combination simulation will have multiple different forces acting at once on the orbs i.e. gravity and friction
+  - we use simulations 1 and 4 as a base
+ 
