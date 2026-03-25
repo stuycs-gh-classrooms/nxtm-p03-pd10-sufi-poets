@@ -145,7 +145,9 @@ class Orb
     friction.mult(-1); //acting against velocity, so (-) of wtvr dxn velocity is
 
     if (velocity.mag() == 0) {
-      return new PVector (0, 0); //friction is equal to 0 except we were getting errors when we tried that
+      return new PVector (0, 0);
+      //to prevent moving back and forth at a super fast pace (aka when velocity is super small) 
+      //we set it back equal to 0
     }
 
     float normalForce = mass * g; //Fn = Fg = mg

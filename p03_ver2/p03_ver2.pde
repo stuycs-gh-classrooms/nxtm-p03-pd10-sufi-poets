@@ -35,39 +35,43 @@ int orbfCount;
 void setup()
 {
   size(600, 600);
-
-  //Part 0: Write makeOrbs below
   makeOrbs(true);
-  frictionMode();
-  //Part 3: create earth to simulate gravity
   earth = new FixedOrb(width/2, height/2, 50, 1000);
 }//setup
 
 
-  void draw() {
+void draw() {
   background(255);
   displayMode();
 
+  if (toggles[COMBINATION]) {
+    for (int o = 0; o < orbCount; o++) {
+      orbs[o].display();
+      if (o < orbCount - 1) {
+        drawSpring(orbs[o], orbs[o + 1]);
+      }
+    }
+  }//if combination is toggled true, then display orbs w/ strings
+
   //draw the orbs and springs
+  if (!toggles[FRICTION]) {
+    for (int o=0; o < orbCount; o++) {
+      orbs[o].display();
+      if (o < orbCount - 1) {
+        drawSpring(orbs[o], orbs[o + 1]);
+      }
+    }
+  }//if friction is NOT TOGGLED, display everything
+
   if (toggles[FRICTION]) {
     for (int i=0; i < orbfCount; i++) {
       forbs[i].display();
     }
-  }
-  
-  for (int o=0; o < orbCount; o++) {
-    orbs[o].display();
-
-    if (o < orbCount - 1) {
-      drawSpring(orbs[o], orbs[o + 1]);
-    }
-  }//draw orbs & springs
+  }//if friction is toggled true, display our orbs
 
   if (toggles[MOVING]) {
     applySprings();
 
-    //Apply earth based gravity and drag if those
-    //options are turned on.
     for (int i=0; i < orbCount; i++) {
       Orb o = orbs[i];
       if (toggles[GRAVITY]) {
@@ -80,59 +84,57 @@ void setup()
       }
     }
 
-      for (int num=0; num< orbfCount; num ++) {
-        Orb f = forbs[num];
-        if (toggles[DRAGF]) {
-          PVector dragf = f.getDragForce(D_COEF);
-          f.applyForce(dragf);
-        }
-      }//drag
-    
-      for (int num=0; num < orbfCount; num++) {
-        if (toggles[FRICTION]) {
-          //frictionMode();
-          //forbs[num].display();
-          applyFriction();
+    for (int num=0; num < orbfCount; num++) {
+      Orb f = forbs[num];
+      if (toggles[DRAGF]) {
+        PVector dragf = f.getDragForce(D_COEF);
+        f.applyForce(dragf);
+      }
+    }
+
+    if (toggles[COMBINATION]) {
+      applySprings(); //spring force
+      for (int i = 0; i < orbCount; i++) {
+        Orb o = orbs[i];
+
+        if (o.center.y >= height - 100) {
+          PVector friction = new PVector(0, 0);
+          if (togglesF[GG]) {
+            friction = o.getFriction(F_COEF_GG);
+          }
+          if (togglesF[II]) {
+            friction = o.getFriction(F_COEF_II);
+          }
+          if (togglesF[WW]) {
+            friction = o.getFriction(F_COEF_WW);
+          }
+          o.applyForce(friction);
         }
       }
+    } else if (toggles[FRICTION]) {
+      applyFriction();
+    }//if friction is true, apply friction
 
+    if (!toggles[FRICTION]) {
       for (int o=0; o < orbCount; o++) {
         orbs[o].move(toggles[BOUNCE]);
       }
-      for (int num = 0; num < orbfCount; num++) {
-        forbs[num].move(toggles[BOUNCE]);
-      }
-      
-    }//moving
-  }//draw
+    }//apply bounce on each orb if no friction
+
+    for (int num = 0; num < orbfCount; num++) {
+      forbs[num].move(toggles[BOUNCE]);
+    }//apply bounce on the friction orbs
+  }//moving
+}//draw
 
 
 /**
  makeOrbs(boolean ordered)
- 
- Set orbCount to NUM_ORBS
- Initialize and create orbCount Orbs in orbs.
- All orbs should have random mass and size.
- The first orb should be a FixedOrb
- If ordered is true:
- The orbs should be spaced SPRING_LENGTH distance
- apart along the middle of the screen.
- If ordered is false:
- The orbs should be positioned radomly.
- 
- Each orb will be "connected" to its neighbors in the array.
+ creates orbs connected with springs!
  */
 void makeOrbs(boolean ordered)
 {
   orbCount = NUM_ORBS;
-  /*if (toggles[FRICTION]) {
-   orbCount = 3; //only want 3 orbs for simplicity
-   float y = 500;
-   orbs[orbCount - 1] = new Orb(width - 100, y, int(random(MIN_SIZE, MAX_SIZE)), int(random(MIN_MASS, MAX_MASS)));
-   } else {
-   orbCount = NUM_ORBS;
-   }
-   */
 
   orbs = new Orb[orbCount];
   orbs[0] = new FixedOrb(); //first orb = FixedOrb
@@ -155,13 +157,26 @@ void makeOrbs(boolean ordered)
 }//makeOrbs
 
 void frictionMode() {
-  orbfCount = 1;
+  orbfCount = 6;
   forbs = new Orb[orbfCount];
-  if (toggles[FRICTION]) {
-    for (int num = 0; num < orbfCount; num++) {
-      float y = 500;
-      forbs[num] = new Orb(width - 100, y, int(random(MIN_SIZE, MAX_SIZE)), int(random(MIN_MASS, MAX_MASS)));
-    }
+  float y = height - 100;
+  float x = width - 500;
+  for (int num = 0; num < orbfCount; num++) {
+    forbs[num] = new Orb(x, y, int(random(MIN_SIZE, MAX_SIZE)), int(random(MIN_MASS, MAX_MASS)));
+    forbs[num].velocity = new PVector(random(-3, 3), 0); //velocity in the x axis!!!
+    x += 70;
+  }
+}
+
+void combinationForce() {
+  orbCount = 6;
+  orbs = new Orb[orbCount];
+  float y = height - 100;
+  float x = 100;
+  for (int i = 0; i < orbCount; i++) {
+    orbs[i] = new Orb(x, y, int(random(MIN_SIZE, MAX_SIZE)), int(random(MIN_MASS, MAX_MASS)));
+    orbs[i].velocity = new PVector(random(-3, 3), 0);
+    x += SPRING_LENGTH;
   }
 }
 
@@ -191,20 +206,13 @@ void drawSpring(Orb o0, Orb o1)
 /**
  applySprings()
  
- FIRST: Fill in getSpring in the Orb class.
- 
- THEN:
- Go through the Orbs array and apply the spring
- force correctly for each orb. We will consider every
- orb as being "connected" via a spring to is
- neighboring orbs in the array.
+ The resulting force should pull the calling object towards
+ other if the spring is extended past springLength and should
+ push the calling object away from o if the spring is compressed
+ to be less than springLength.
  */
 void applySprings()
 {
-  /** The resulting force should pull the calling object towards
-   other if the spring is extended past springLength and should
-   push the calling object away from o if the spring is compressed
-   to be less than springLength.*/
   for (int i = 1; i < orbCount - 1; i++) {
     Orb o0 = orbs[i]; //calling object
     Orb o1 = orbs[i + 1]; //other object
@@ -219,9 +227,10 @@ void applySprings()
 }//applySprings
 
 void applyFriction() {
-  PVector friction = new PVector(0, 0);
-  for (int num = 0; num < orbfCount; num++) { //subtracvted 1 bc of fixed obj
+  for (int num = 0; num < orbfCount; num++) {
     Orb o0 = forbs[num]; //calling object
+    PVector friction = new PVector(0, 0);
+
     if (o0.center.y >= height - 100 /* - o0.bsize/2 - 1*/) { //orbs on the ground
       if (togglesF[GG]) {
         friction = o0.getFriction(F_COEF_GG).add(o0.getDragForce(D_COEF));
@@ -235,25 +244,12 @@ void applyFriction() {
     }
     o0.applyForce(friction);
   }
-}
-
-//draw ground using shape done
-//spawn in the orbs on the ground (altering the x and y position) done
-//apply the force of friction on that orb (do this by a for loop?) done
-//use an if statement for when friction and dragforce are applied at the same time
-//in which you add the two forces together.
-//work on combo force!!!!!!! :) good luck sufia ily <3
+}//applyFriction --> uses getFriction to calculate fk and applies it onto each orb.
 
 
 /**
  addOrb()
- 
  Add an orb to the arry of orbs.
- 
- If the array of orbs is full, make a
- new, larger array that contains all
- the current orbs and the new one.
- (check out arrayCopy() to help)
  */
 void addOrb()
 {
@@ -265,13 +261,6 @@ void addOrb()
 }//addOrb
 
 
-/**
- keyPressed()
- 
- Toggle the various modes on and off
- Use 1 and 2 to setup model.
- Use - and + to add/remove orbs.
- */
 void keyPressed()
 {
   if (key == ' ') {
@@ -288,10 +277,19 @@ void keyPressed()
   }
   if (key == 'f') {
     toggles[FRICTION] = !toggles[FRICTION];
-    frictionMode();
+    if (toggles[FRICTION]) {
+      frictionMode();
+    } else {
+      makeOrbs(true); //goes back to original setup
+    }
   }
   if (key == 'c') {
     toggles[COMBINATION] = !toggles[COMBINATION];
+    if (toggles[COMBINATION]) {
+      combinationForce();
+    } else {
+      makeOrbs(true); //goes back to original setup
+    }
   }
   if (key == 'r') {
     togglesF[GG] = !togglesF[GG];
@@ -352,31 +350,33 @@ void displayMode()
     text(modes[m], x+2, 2);
     x+= w+5;
   }
-  if (toggles[FRICTION]) {
+  if (toggles[FRICTION] || toggles[COMBINATION]) {
+    textSize(15);
+    if (togglesF[GG]) {
+      fill(190, 196, 198);
+      rect(0, height-100, width, 100);
+
+      fill(0);
+      textAlign(LEFT);
+      text("Glass on glass friction", 460, 590);
+    } else if (togglesF[WW]) {
+      fill(144, 129, 115);
+      rect(0, height-100, width, 100);
+
+      fill(0);
+      textAlign(LEFT);
+      text("Wood on wood friction", 460, 590);
+    } else if (togglesF[II]) {
+      fill(133, 201, 227);
+      rect(0, height-100, width, 100);
+
+      fill(0);
+      textAlign(LEFT);
+      text("Ice on ice friction", 460, 590);
+    }
     fill(0);
     textSize(15);
     textAlign(RIGHT);
-    text("Press 'r', 'w', or 'i' for different types of friction.", 300, 500);
-    if (togglesF[GG]) {
-      fill(0);
-      textAlign(LEFT);
-      text("Glass on glass friction", 460, 500);
-      fill(190, 196, 198);
-      rect(0, height-100, width, 100);
-    }
-    if (togglesF[WW]) {
-      fill(0);
-      textAlign(LEFT);
-      text("Wood on wood friction", 460, 500);
-      fill(144, 129, 115);
-      rect(0, height-100, width, 100);
-    }
-    if (togglesF[II]) {
-      fill(0);
-      textAlign(LEFT);
-      text("Ice on ice friction", 460, 500);
-      fill(133, 201, 227);
-      rect(0, height-100, width, 100);
-    }
+    text("Press 'r', 'w', or 'i' for different types of friction.", 300, 590);
   }
 }//display
